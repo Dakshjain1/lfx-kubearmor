@@ -5,4 +5,8 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - name: Setup a Kubernetes environment
+        run: ./.github/workflows/install-k3s.sh
+      - name: run get pods
+        run: |
+          kubectl get pods -A
