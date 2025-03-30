@@ -1,8 +1,8 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: Test KubeArmor polices
+run-name: ${{ github.actor }} is verifying KubeArmor policies for multiple app versions
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  Test-KubeArmor-Policies:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,6 +14,21 @@ jobs:
           chmod +x ./contribution/k3s/install_k3s.sh
       - name: Setup a Kubernetes environment
         run: ./.github/workflows/install-k3s.sh
+      - name: Wait for All Pods to be Ready
+        run: |
+          echo "Waiting for all pods to reach the Ready state..."
+          while true; do
+            not_ready_pods=$(kubectl get pods -A --no-headers | awk '$3 ~ /0/ {print $0}')
+            if [ -z "$not_ready_pods" ]; then
+              echo "All pods are in the Ready state."
+              break
+            else
+              echo "The following pods are not ready yet:"
+              echo "$not_ready_pods"
+              echo "Retrying in 5 seconds..."
+              sleep 5
+            fi
+          done
       - name: run get pods
         run: |
           kubectl get pods -A
