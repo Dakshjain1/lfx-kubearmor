@@ -40,8 +40,9 @@ jobs:
       - name: Wait for All Pods to be Ready
         run: |
           ./.github/workflows/check-pod-ready-status.sh
-      - name: run get pods
+      - name: run get pods + create test-ksp namespace
         run: |
+          kubectl create ns test-ksp
           kubectl get pods -A
           echo "k3s Environment setup complete."
       - name: install Helm
