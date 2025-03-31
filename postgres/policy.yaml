@@ -1,1 +1,20 @@
 # postgres policy
+
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-postgres-zero-trust
+  namespace: test-ksp
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: my-psql 
+  process:
+    matchDirectories:
+    - dir: /opt/bitnami/postgresql/bin/
+  network:
+    matchProtocols:
+    - protocol: TCP
+  action:
+    Allow

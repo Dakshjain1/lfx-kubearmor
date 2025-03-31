@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: run get pods
+      - name: set perms
         run: |
           pwd
           ls -la
@@ -32,3 +32,25 @@ jobs:
       - name: run get pods
         run: |
           kubectl get pods -A
+          echo "k3s Environment setup complete."
+      - name: install Helm
+        run: | 
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+          helm --version
+      - name: install KubeArmor
+        run: | 
+          curl -sfL http://get.kubearmor.io/ | sudo sh -s -- -b /usr/local/bin
+          karmor install
+          kubectl get pods -A
+      - name: install application
+        run: | 
+          helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.38 --namespace test-ksp
+          helm list -A
+          kubectl get pods -A
+      # - name: install its policies
+      # - name: run tests
+      # - name: run cleanup
+        
+      
