@@ -54,6 +54,10 @@ jobs:
         run: | 
           curl -sfL http://get.kubearmor.io/ | sudo sh -s -- -b /usr/local/bin
           karmor install
+      - name: apply kubearmor policies
+        run: | 
+          kubectl apply -f ./postgres/policy.yaml
+          kubectl get ksp -n test-ksp
       - name: install application
         run: | 
           helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version ${{ matrix.version }} --create-namespace -n test-ksp
@@ -64,10 +68,6 @@ jobs:
       - name: run get pods
         run: |
           kubectl get pods -A
-      - name: install its policies
-        run: | 
-          kubectl apply -f ./postgres/policy.yaml
-          kubectl get ksp -n test-ksp
       - name: run tests
         run: | 
           chmod +x ./postgres/test.sh
