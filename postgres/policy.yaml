@@ -9,7 +9,7 @@ spec:
   severity: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: my-psql 
+      app.kubernetes.io/instance: my-psql
   process:
     matchDirectories:
     - dir: /opt/bitnami/postgresql/bin/

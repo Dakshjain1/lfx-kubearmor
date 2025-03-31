@@ -43,14 +43,36 @@ jobs:
         run: | 
           curl -sfL http://get.kubearmor.io/ | sudo sh -s -- -b /usr/local/bin
           karmor install
-          kubectl get pods -A
       - name: install application
         run: | 
           helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.38 --create-namespace -n test-ksp
           helm list -A
+      - name: waiting for kubearmor + application to be ready
+        run: | 
+          echo "Waiting for all pods to reach the Ready state..."
+          while true; do
+            not_ready_pods=$(kubectl get pods -A --no-headers | awk '$3 ~ /0/ {print $0}')
+            if [ -z "$not_ready_pods" ]; then
+              echo "All pods are in the Ready state."
+              break
+            else
+              echo "The following pods are not ready yet:"
+              echo "$not_ready_pods"
+              echo "Retrying in 5 seconds..."
+              sleep 5
+            fi
+          done
+      - name: run get pods
+        run: |
           kubectl get pods -A
-      # - name: install its policies
-      # - name: run tests
+      - name: install its policies
+        run: | 
+          kubectl apply -f ./postgres/policy.yaml
+          kubectl get ksp -n test-ksp
+      - name: run tests
+        run: | 
+          chmod +x ./postgres/test.sh
+          ./postgres/test.sh
       # - name: run cleanup
         
       
