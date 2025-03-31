@@ -51,7 +51,7 @@ jobs:
         run: | 
           echo "Waiting for all pods to reach the Ready state..."
           while true; do
-            not_ready_pods=$(kubectl get pods -A --no-headers | awk '$3 ~ /0/ {print $0}')
+            not_ready_pods=$(kubectl get pods -n test-ksp --no-headers | awk '$3 ~ /0/ {print $0}')
             if [ -z "$not_ready_pods" ]; then
               echo "All pods are in the Ready state."
               break
