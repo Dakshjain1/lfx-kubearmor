@@ -20,7 +20,7 @@ jobs:
   Test-KubeArmor-Policies:
     strategy:
       matrix:
-        color: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
+        version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
     runs-on: ubuntu-latest
     needs: define-matrix
     steps:
