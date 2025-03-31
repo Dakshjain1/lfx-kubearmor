@@ -82,8 +82,8 @@ jobs:
       - name: Commit and Push Changes
         if: always()  # Ensures it runs even on failure
         run: |
-          git config --global user.name "Dakshjain01"
-          git config --global user.email "daksh.jain00@gmail.com"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
           git checkout -b status-update
           git add ./postgres/README.md
           git commit -m "Update job status for ${{ matrix.version }}"
