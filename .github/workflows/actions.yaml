@@ -23,6 +23,8 @@ jobs:
         version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
     runs-on: ubuntu-latest
     needs: define-matrix
+    outputs:
+      status: ${{ job.status }}
     steps:
       - name: Echo Version
         run: echo "Testing for version ${{ matrix.version }}"
@@ -73,3 +75,16 @@ jobs:
         run: | 
           chmod +x ./postgres/test.sh
           ./postgres/test.sh
+      - name: Append Job Status to README
+        if: always()  # Runs even if the previous step fails
+        run: echo "${{ matrix.version }} -- ${{ job.status }}" >> ./postgres/README.md
+
+      - name: Commit and Push Changes
+        if: always()  # Ensures it runs even on failure
+        run: |
+          git config --global user.name "Dakshjain01"
+          git config --global user.email "daksh.jain00@gmail.com"
+          git checkout -b status-update
+          git add ./postgres/README.md
+          git commit -m "Update job status for ${{ matrix.version }}"
+          git push origin status-update
