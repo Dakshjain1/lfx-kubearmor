@@ -2,33 +2,40 @@ name: Test KubeArmor polices
 run-name: ${{ github.actor }} is verifying KubeArmor policies for multiple app versions
 on: [push]
 jobs:
+  define-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      appVersions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Define Versions
+        id: versions
+        run: |
+          versions=$(cat ./postgres/versions.txt)
+          echo "versions=$versions" >> $GITHUB_OUTPUT
   Test-KubeArmor-Policies:
+    strategy:
+      matrix:
+        version: ${{ fromJson(needs.define-matrix.outputs.appVersions) }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Echo Version
+        run: echo "Testing for version ${{ matrix.version }}"
+      - name: Checkout Repository
+        uses: actions/checkout@v3
       - name: set perms
         run: |
           pwd
           ls -la
           chmod +x ./.github/workflows/install-k3s.sh
+          chmod +x ./.github/workflows/check-pod-ready-status.sh
           chmod +x ./contribution/k3s/install_k3s.sh
       - name: Setup a Kubernetes environment
         run: ./.github/workflows/install-k3s.sh
       - name: Wait for All Pods to be Ready
         run: |
-          echo "Waiting for all pods to reach the Ready state..."
-          while true; do
-            not_ready_pods=$(kubectl get pods -A --no-headers | awk '$3 ~ /0/ {print $0}')
-            if [ -z "$not_ready_pods" ]; then
-              echo "All pods are in the Ready state."
-              break
-            else
-              echo "The following pods are not ready yet:"
-              echo "$not_ready_pods"
-              echo "Retrying in 5 seconds..."
-              sleep 5
-            fi
-          done
+          ./.github/workflows/check-pod-ready-status.sh
       - name: run get pods
         run: |
           kubectl get pods -A
@@ -45,23 +52,11 @@ jobs:
           karmor install
       - name: install application
         run: | 
-          helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.38 --create-namespace -n test-ksp
+          helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version ${{ matrix.version }} --create-namespace -n test-ksp
           helm list -A
-      - name: waiting for kubearmor + application to be ready
+      - name: waiting for application to be ready
         run: |
-          echo "Waiting for all pods to reach the Ready state..."
-          while true; do
-            not_ready_pods=$(kubectl get pods -n test-ksp --no-headers | awk '$2 ~ /0/ {print $0}')
-            if [ -z "$not_ready_pods" ]; then
-              echo "All pods are in the Ready state."
-              break
-            else
-              echo "The following pods are not ready yet:"
-              echo "$not_ready_pods"
-              echo "Retrying in 5 seconds..."
-              sleep 5
-            fi
-          done
+          ./.github/workflows/check-pod-ready-status.sh test-ksp
       - name: run get pods
         run: |
           kubectl get pods -A
@@ -73,6 +68,3 @@ jobs:
         run: | 
           chmod +x ./postgres/test.sh
           ./postgres/test.sh
-      # - name: run cleanup
-        
-      
