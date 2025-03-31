@@ -46,7 +46,7 @@ jobs:
           kubectl get pods -A
       - name: install application
         run: | 
-          helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.38 --namespace test-ksp
+          helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.38 --create-namespace test-ksp
           helm list -A
           kubectl get pods -A
       # - name: install its policies
