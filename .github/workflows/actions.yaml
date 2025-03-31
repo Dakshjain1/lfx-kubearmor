@@ -48,10 +48,10 @@ jobs:
           helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version 15.5.38 --create-namespace -n test-ksp
           helm list -A
       - name: waiting for kubearmor + application to be ready
-        run: | 
+        run: |
           echo "Waiting for all pods to reach the Ready state..."
           while true; do
-            not_ready_pods=$(kubectl get pods -n test-ksp --no-headers | awk '$3 ~ /0/ {print $0}')
+            not_ready_pods=$(kubectl get pods -n test-ksp --no-headers | awk '$2 ~ /0/ {print $0}')
             if [ -z "$not_ready_pods" ]; then
               echo "All pods are in the Ready state."
               break
