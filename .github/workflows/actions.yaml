@@ -99,7 +99,7 @@ jobs:
           path: artifacts/
       - name: Merge All Job Statuses into Readme
         run: |
-          ls -la artifacts/readme-${{ matrix.version }}
+          ls -la artifacts/readme-*
 # cat artifacts/* >> ./postgres/README.md
       - name: Commit and Push Changes
 #        if: always()  # Ensures it runs even on failure
