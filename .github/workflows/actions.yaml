@@ -77,12 +77,14 @@ jobs:
           ./postgres/test.sh
       - name: Append Job Status to README
         if: always()  # Runs even if the previous step fails
-        run: echo "${{ matrix.version }} -- ${{ job.status }}" >> ./postgres/README.md
-      - name: Upload Readme as Artifact
+        run: |
+          touch ./postgres/${{ matrix.version }}-README.md
+          echo "${{ matrix.version }} -- ${{ job.status }}" >> ./postgres/${{ matrix.version }}-README.md
+      - name: Upload README
         uses: actions/upload-artifact@v4
         with:
-          name: readme-updates
-          path: ./postgres/README.md
+          name: readme-${{ matrix.version }}
+          path: ./postgres/${{ matrix.version }}-README.md
           retention-days: 1
 
   create-PR:
@@ -94,17 +96,16 @@ jobs:
       - name: Download All Readme Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: readme-updates
-          path: ./postgres/
-
+          path: artifacts/
       - name: Merge All Job Statuses into Readme
         run: |
-          cat ./postgres/README.md | sort -u > ./postgres/README.md
+          cat artifacts/*/README.md >> ./postgres/README.md
       - name: Commit and Push Changes
 #        if: always()  # Ensures it runs even on failure
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          git diff
           git checkout -b status-update
           git add ./postgres/README.md
           git commit -m "Update policy status for postgres"
