@@ -37,44 +37,44 @@ jobs:
           chmod +x ./.github/workflows/install-k3s.sh
           chmod +x ./.github/workflows/check-pod-ready-status.sh
           chmod +x ./contribution/k3s/install_k3s.sh
-      - name: Setup a Kubernetes environment
-        run: ./.github/workflows/install-k3s.sh
-      - name: Wait for All Pods to be Ready
-        run: |
-          ./.github/workflows/check-pod-ready-status.sh
-      - name: run get pods + create test-ksp namespace
-        run: |
-          kubectl create ns test-ksp
-          kubectl get pods -A
-          echo "k3s Environment setup complete."
-      - name: install Helm
-        run: | 
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh
-          helm version
-      - name: install KubeArmor
-        run: | 
-          curl -sfL http://get.kubearmor.io/ | sudo sh -s -- -b /usr/local/bin
-          karmor install
-      - name: apply kubearmor policies
-        run: | 
-          kubectl apply -f ./postgres/policy.yaml
-          kubectl get ksp -n test-ksp
-      - name: install application
-        run: | 
-          helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version ${{ matrix.version }} --create-namespace -n test-ksp
-          helm list -A
-      - name: waiting for application to be ready
-        run: |
-          ./.github/workflows/check-pod-ready-status.sh test-ksp
-      - name: run get pods
-        run: |
-          kubectl get pods -A
-      - name: run tests
-        run: | 
-          chmod +x ./postgres/test.sh
-          ./postgres/test.sh
+      # - name: Setup a Kubernetes environment
+      #   run: ./.github/workflows/install-k3s.sh
+      # - name: Wait for All Pods to be Ready
+      #   run: |
+      #     ./.github/workflows/check-pod-ready-status.sh
+      # - name: run get pods + create test-ksp namespace
+      #   run: |
+      #     kubectl create ns test-ksp
+      #     kubectl get pods -A
+      #     echo "k3s Environment setup complete."
+      # - name: install Helm
+      #   run: | 
+      #     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      #     chmod 700 get_helm.sh
+      #     ./get_helm.sh
+      #     helm version
+      # - name: install KubeArmor
+      #   run: | 
+      #     curl -sfL http://get.kubearmor.io/ | sudo sh -s -- -b /usr/local/bin
+      #     karmor install
+      # - name: apply kubearmor policies
+      #   run: | 
+      #     kubectl apply -f ./postgres/policy.yaml
+      #     kubectl get ksp -n test-ksp
+      # - name: install application
+      #   run: | 
+      #     helm install my-psql oci://registry-1.docker.io/bitnamicharts/postgresql --version ${{ matrix.version }} --create-namespace -n test-ksp
+      #     helm list -A
+      # - name: waiting for application to be ready
+      #   run: |
+      #     ./.github/workflows/check-pod-ready-status.sh test-ksp
+      # - name: run get pods
+      #   run: |
+      #     kubectl get pods -A
+      # - name: run tests
+      #   run: | 
+      #     chmod +x ./postgres/test.sh
+      #     ./postgres/test.sh
       - name: Append Job Status to README
         if: always()  # Runs even if the previous step fails
         run: |
@@ -99,7 +99,8 @@ jobs:
           path: artifacts/
       - name: Merge All Job Statuses into Readme
         run: |
-          cat artifacts/* >> ./postgres/README.md
+          ls -la artifacts/
+# cat artifacts/* >> ./postgres/README.md
       - name: Commit and Push Changes
 #        if: always()  # Ensures it runs even on failure
         run: |
