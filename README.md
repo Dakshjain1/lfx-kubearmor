@@ -9,3 +9,5 @@ not required bcz branch is created by user - # change branch name as well to fol
 # instead of rm -rf ./postgres/README.md remove top 5 lines from the file - suggest better way
 
 done - # issue comment trigger only when comment match
+
+# add status checks

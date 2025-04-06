@@ -14,9 +14,10 @@ jobs:
       - name: Get branch name
         uses: xt0rted/pull-request-comment-branch@v3
         id: comment-branch
-      - name: Set branch name in env
+      - name: Set branch name & sha in env
         run: |
           echo "BRANCH_NAME=${{ steps.comment-branch.outputs.head_ref }}" >> $GITHUB_ENV
+# echo "HEAD_SHA=${{ steps.comment-branch.outputs.head_sha }}" >> $GITHUB_ENV
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
@@ -40,11 +41,12 @@ jobs:
     outputs:
       status: ${{ job.status }}
     steps:
-      - name: Set commit status as pending
-        uses: myrotvorets/set-commit-status-action@master
-        with:
-          status: pending
-          context: test-kubeArmor-policies (${{ matrix.version }})
+      # - name: Set commit status as pending
+      #   uses: myrotvorets/set-commit-status-action@master
+      #   with:
+      #     status: pending
+      #     context: test-kubeArmor-policies (${{ matrix.version }})
+      #     sha: ${{ env.HEAD_SHA }}
       - name: Echo Version
         run: echo "Testing for version ${{ matrix.version }}"
       - name: Checkout Repository
@@ -108,11 +110,11 @@ jobs:
           name: readme-${{ matrix.version }}
           path: ./postgres/${{ matrix.version }}-README.md
           retention-days: 1
-      - name: Set final commit status
-        uses: myrotvorets/set-commit-status-action@master
-        with:
-          status: ${{ job.status }}
-          context: test-kubeArmor-policies (${{ matrix.version }})
+      # - name: Set final commit status
+      #   uses: myrotvorets/set-commit-status-action@master
+      #   with:
+      #     status: ${{ job.status }}
+      #     context: test-kubeArmor-policies (${{ matrix.version }})
   update-pr:
     if: always()
     runs-on: ubuntu-latest
