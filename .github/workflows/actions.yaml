@@ -120,3 +120,4 @@ jobs:
           commit-message: "Update policy status for postgres for all versions"
           title: "Update policy status for postgres for all versions"
           branch: status-update
+          base: main
