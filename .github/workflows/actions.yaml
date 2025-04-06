@@ -81,6 +81,7 @@ jobs:
           touch ./postgres/${{ matrix.version }}-README.md
           echo "${{ matrix.version }} -- ${{ job.status }}" >> ./postgres/${{ matrix.version }}-README.md
       - name: Upload README
+        if: always()  # Runs even if the previous step fails
         uses: actions/upload-artifact@v4
         with:
           name: readme-${{ matrix.version }}
