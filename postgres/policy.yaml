@@ -1,4 +1,4 @@
-# postgres  policy
+# postgres policy
 
 apiVersion: security.kubearmor.com/v1
 kind: KubeArmorPolicy
