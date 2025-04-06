@@ -88,7 +88,7 @@ jobs:
           retention-days: 1
 
   create-PR:
-    continue-on-error: true
+    if: always()  # Runs even if the previous job fails
     runs-on: ubuntu-latest
     needs: Test-KubeArmor-Policies
     steps:
