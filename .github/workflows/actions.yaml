@@ -120,11 +120,13 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git status
+          git add ./postgres/README.md
+          git commit -m "Update README with job status for postgres for all versions"
           git push origin ${{ steps.comment-branch.outputs.head_ref }}
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          commit-message: "Update policy status for postgres for all versions"
-          title: "Update policy status for postgres for all versions"
-          branch: ${{ steps.comment-branch.outputs.head_ref }}
-          base: main
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v7
+      #   with:
+      #     commit-message: "Update policy status for postgres for all versions"
+      #     title: "Update policy status for postgres for all versions"
+      #     branch: ${{ steps.comment-branch.outputs.head_ref }}
+      #     base: main
