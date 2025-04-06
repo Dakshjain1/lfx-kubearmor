@@ -4,14 +4,23 @@ on:
   issue_comment:
     types: [created]
 jobs:
+
   define-matrix:
     if: contains(github.event.comment.body, '/test-policy')
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.versions.outputs.versions }}
     steps:
+      - name: Get branch name
+        uses: xt0rted/pull-request-comment-branch@v3
+        id: comment-branch
+      - name: Set branch name in env
+        run: |
+          echo "BRANCH_NAME=${{ steps.comment-branch.outputs.head_ref }}" >> $GITHUB_ENV
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
       - name: Define Versions
         id: versions
         run: |
@@ -20,9 +29,9 @@ jobs:
       - name: Display Versions
         run: |
           echo "Versions: ${{ steps.versions.outputs.versions }}"
-  Test-KubeArmor-Policies:
-    name: Test KubeArmor Policies
-    if: contains(github.event.comment.body, '/test-policy')
+  test-kubeArmor-policies:
+    name: test-kubeArmor-policies
+    # if: contains(github.event.comment.body, '/test-policy')
     strategy:
       matrix:
         version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
@@ -31,10 +40,17 @@ jobs:
     outputs:
       status: ${{ job.status }}
     steps:
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          status: pending
+          context: test-kubeArmor-policies (${{ matrix.version }})
       - name: Echo Version
         run: echo "Testing for version ${{ matrix.version }}"
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH_NAME }}
       - name: set perms
         run: |
           pwd
@@ -92,32 +108,20 @@ jobs:
           name: readme-${{ matrix.version }}
           path: ./postgres/${{ matrix.version }}-README.md
           retention-days: 1
-  status-check:
-    name: matrix-final-status
-    needs: Test-KubeArmor-Policies
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          status: ${{ job.status }}
+          context: test-kubeArmor-policies (${{ matrix.version }})
+  update-pr:
     if: always()
     runs-on: ubuntu-latest
+    needs: test-kubeArmor-policies
     steps:
-      - run: |
-          if [[ "${{ needs.Test-KubeArmor-Policies.result }}" != "success" ]]; then
-            echo "❌ Matrix jobs failed"
-            exit 1
-          else
-            echo "✅ All matrix jobs passed."
-            exit 0
-          fi
-  create-PR:
-    if: always() && contains(github.event.comment.body, '/test-policy')
-    runs-on: ubuntu-latest
-    needs: Test-KubeArmor-Policies
-    steps:
-      - name: Get branch name
-        uses: xt0rted/pull-request-comment-branch@v3
-        id: comment-branch
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment-branch.outputs.head_ref }}
+          ref: ${{ env.BRANCH_NAME }}
       - name: Download All Readme Artifacts
         uses: actions/download-artifact@v4
         with:
