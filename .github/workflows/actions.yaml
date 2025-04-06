@@ -102,6 +102,9 @@ jobs:
           if [[ "${{ needs.Test-KubeArmor-Policies.result }}" != "success" ]]; then
             echo "❌ Matrix jobs failed"
             exit 1
+          else
+            echo "✅ All matrix jobs passed."
+            exit 0
           fi
   create-PR:
     if: always() && contains(github.event.comment.body, '/test-policy')
