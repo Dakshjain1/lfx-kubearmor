@@ -103,6 +103,7 @@ jobs:
         run: |
           ls -la artifacts/readme-*
           cat artifacts/*/*-README.md >> ./postgres/README.md
+          rm -rf artifacts/
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions"
@@ -112,10 +113,10 @@ jobs:
           git add ./postgres/README.md
           git commit -m "Update policy status for postgres"
           git push origin status-update
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          commit-message: "Update policy status for postgres for all versions"
-          title: "Update policy status for postgres for all versions"
-          branch: status-update
-          base: main
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v7
+      #   with:
+      #     commit-message: "Update policy status for postgres for all versions"
+      #     title: "Update policy status for postgres for all versions"
+      #     branch: status-update
+      #     base: main
