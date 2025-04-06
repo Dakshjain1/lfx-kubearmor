@@ -111,8 +111,6 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git status
           git checkout -b status-update
-          git add ./postgres/README.md
-          git commit -m "Update policy status for postgres"
           git push origin status-update
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
