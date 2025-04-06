@@ -92,6 +92,17 @@ jobs:
           name: readme-${{ matrix.version }}
           path: ./postgres/${{ matrix.version }}-README.md
           retention-days: 1
+  status-check:
+    name: matrix-final-status
+    needs: Test-KubeArmor-Policies
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [[ "${{ needs.Test-KubeArmor-Policies.result }}" != "success" ]]; then
+            echo "❌ Matrix jobs failed"
+            exit 1
+          fi
   create-PR:
     if: always() && contains(github.event.comment.body, '/test-policy')
     runs-on: ubuntu-latest
