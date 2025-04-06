@@ -102,6 +102,8 @@ jobs:
       - name: Merge All Job Statuses into Readme
         run: |
           ls -la artifacts/readme-*
+          rm -rf ./postgres/README.md
+          touch ./postgres/README.md
           cat artifacts/*/*-README.md >> ./postgres/README.md
           rm -rf artifacts/
           cat ./postgres/README.md
