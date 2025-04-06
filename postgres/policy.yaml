@@ -17,4 +17,4 @@ spec:
     matchProtocols:
     - protocol: TCP
   action:
-    Allow
+    Block
