@@ -1,6 +1,8 @@
 name: Test KubeArmor polices
 run-name: ${{ github.actor }} is verifying KubeArmor policies for multiple app versions
-on: [push]
+on:
+  issue_comment:
+    types: [created]
 jobs:
   define-matrix:
     runs-on: ubuntu-latest
