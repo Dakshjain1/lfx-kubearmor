@@ -21,6 +21,7 @@ jobs:
         run: |
           echo "Versions: ${{ steps.versions.outputs.versions }}"
   Test-KubeArmor-Policies:
+    name: Test KubeArmor Policies
     if: contains(github.event.comment.body, '/test-policy')
     strategy:
       matrix:
