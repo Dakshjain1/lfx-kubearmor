@@ -1,13 +1,14 @@
 # lfx-kubearmor
 
+TASKS -
+
+DONE
+pull request to run on only policy files, not on readme updates - resolved by triggering action only on issue comment
+issue comment trigger only when comment match - done
 
 
-resolved by triggering action only on issue comment - # pull request to run on only policy files, not on readme updates.
-# git diff se fetch the file change to get the folder name - rename all postgres to {{ folder name}}
-not required bcz branch is created by user - # change branch name as well to folder name unique if possible.
-
-# instead of rm -rf ./postgres/README.md remove top 5 lines from the file - suggest better way
-
-done - # issue comment trigger only when comment match
-
-# add status checks
+TODO
+fetch the files changed to get the folder name to make action modular - then rename all postgres to {{ folder name}} in action
+instead of rm -rf ./postgres/README.md remove top 5 lines from the file - suggest better way
+add status checks pending on start  +  done at end.
+    if job cancelled - change status to failure - in readme it should be only fail or success
