@@ -4,7 +4,6 @@ on:
   issue_comment:
     types: [created]
 jobs:
-
   define-matrix:
     if: contains(github.event.comment.body, '/test-policy')
     runs-on: ubuntu-latest
@@ -19,7 +18,6 @@ jobs:
         id: branch_name
         run: |
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_OUTPUT
-# echo "HEAD_SHA=${{ steps.comment-branch.outputs.head_sha }}" >> $GITHUB_ENV
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
@@ -34,7 +32,6 @@ jobs:
           echo "Versions: ${{ steps.versions.outputs.versions }}"
   test-kubeArmor-policies:
     name: test-kubeArmor-policies
-    # if: contains(github.event.comment.body, '/test-policy')
     strategy:
       matrix:
         version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
@@ -43,12 +40,6 @@ jobs:
     outputs:
       status: ${{ job.status }}
     steps:
-      # - name: Set commit status as pending
-      #   uses: myrotvorets/set-commit-status-action@master
-      #   with:
-      #     status: pending
-      #     context: test-kubeArmor-policies (${{ matrix.version }})
-      #     sha: ${{ env.HEAD_SHA }}
       - name: Echo Version
         run: echo "Testing for version ${{ matrix.version }}"
       - name: Checkout Repository
@@ -112,11 +103,6 @@ jobs:
           name: readme-${{ matrix.version }}
           path: ./postgres/${{ matrix.version }}-README.md
           retention-days: 1
-      # - name: Set final commit status
-      #   uses: myrotvorets/set-commit-status-action@master
-      #   with:
-      #     status: ${{ job.status }}
-      #     context: test-kubeArmor-policies (${{ matrix.version }})
   update-pr:
     if: always()
     runs-on: ubuntu-latest
@@ -146,10 +132,3 @@ jobs:
           git add ./postgres/README.md
           git commit -m "Update README with job status for postgres for all versions"
           git push origin ${{ steps.comment-branch.outputs.head_ref }}
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v7
-      #   with:
-      #     commit-message: "Update policy status for postgres for all versions"
-      #     title: "Update policy status for postgres for all versions"
-      #     branch: ${{ steps.comment-branch.outputs.head_ref }}
-      #     base: main
