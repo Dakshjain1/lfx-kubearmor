@@ -1,4 +1,5 @@
-# postgres  policy
+# todo
+# make paths/directories read only
 
 apiVersion: security.kubearmor.com/v1
 kind: KubeArmorPolicy
@@ -9,12 +10,67 @@ spec:
   severity: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: my-psql
+      app.kubernetes.io/name: postgresql
   process:
     matchDirectories:
     - dir: /opt/bitnami/postgresql/bin/
+      recursive: true
+    - dir: /opt/bitnami/scripts/postgresql/
+      recursive: true
+    matchPaths:
+# from source entrypoint.sh
+    - path: /usr/bin/touch
+      fromSource:
+      - path: /opt/bitnami/scripts/postgresql/entrypoint.sh
+      - path: /usr/bin/bash
+    - path: /usr/bin/date
+      fromSource:
+      - path: /opt/bitnami/scripts/postgresql/entrypoint.sh
+      - path: /usr/bin/bash
+# from source bash
+    - path: /usr/bin/id
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/find
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/chmod
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/rm
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/grep
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/cat
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/sed
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/ls
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/mktemp
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/getent
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/realpath
+      fromSource:
+      - path: /usr/bin/bash
+
+    - path: /usr/bin/hostname
+    - path: /usr/bin/cp
+    - path: /usr/bin/dash
+    - path: /usr/bin/bash
+
   network:
     matchProtocols:
-    - protocol: TCP
-  action:
-    Allow
+    - protocol: ALL
+      fromSource:
+        - path: /opt/bitnami/postgresql/bin/pg_isready
+        - path: /opt/bitnami/postgresql/bin/postgres
+  action: Allow

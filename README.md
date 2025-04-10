@@ -12,3 +12,6 @@ TODO
 * instead of rm -rf ./postgres/README.md remove top 5 lines from the file - suggest better way
 * add status checks pending on start  +  done at end.
     * if job cancelled - change status to failure - in readme it should be only fail or success
+
+
+* 5 policies - nginx-ingress controller
