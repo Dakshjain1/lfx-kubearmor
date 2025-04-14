@@ -1,0 +1,54 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-ingress-nginx-controller-zero-trust
+  namespace: lfx #test-ksp
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+  process:
+    matchPaths:
+# from source bash
+    - path: /usr/bin/cp
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/date
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/dirname
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/find
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/id
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/ls
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/rm
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/sed
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/realpath
+      fromSource:
+      - path: /usr/bin/bash
+
+    - path: /usr/bin/bash
+    - path: /opt/bitnami/nginx/sbin/nginx
+    - path: /opt/bitnami/scripts/nginx/run.sh
+  network:
+    matchProtocols:
+    - protocol: ALL
+      fromSource:
+        - path: /opt/bitnami/nginx/sbin/nginx
+        - path: /opt/bitnami/scripts/nginx/run.sh
+        - path: /opt/bitnami/scripts/nginx/setup.sh
+        - path: /opt/bitnami/scripts/nginx/entrypoint.sh
+        - path: /bin/bash
+  action: Allow
