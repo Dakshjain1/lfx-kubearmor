@@ -1,0 +1,102 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-mariadb-zero-trust
+  namespace: test-ksp
+spec:
+  severity: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mariadb
+  process:
+    matchPaths:
+# from source bash
+    - path: /usr/bin/cat
+      fromSource:
+      - path: /usr/bin/bash
+      - path: /usr/bin/dash
+      - path: /opt/bitnami/mariadb/bin/mariadb-admin
+    - path: /opt/bitnami/mariadb/bin/mariadb
+      fromSource:
+      - path: /usr/bin/dash
+      - path: /usr/bin/bash
+    - path: /opt/bitnami/mariadb/bin/mariadb-check
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /opt/bitnami/mariadb/bin/mariadb-upgrade
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /opt/bitnami/mariadb/bin/my_print_defaults
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /opt/bitnami/mariadb/bin/resolveip
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /opt/bitnami/mariadb/sbin/mariadbd
+      fromSource:
+      - path: /usr/bin/dash
+      - path: /usr/bin/bash
+    - path: /usr/bin/dash
+      fromSource:
+      - path: /opt/bitnami/mariadb/bin/mariadb-upgrade
+      - path: /usr/bin/bash
+    - path: /usr/bin/date
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/dirname
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /usr/bin/dirname
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /usr/bin/echo
+      fromSource:
+      - path: /usr/bin/xargs
+    - path: /usr/bin/find
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/grep
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/id
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/mkdir
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/rm
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/sed
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /usr/bin/uname
+      fromSource:
+      - path: /usr/bin/dash
+    - path: /usr/bin/sleep
+      fromSource:
+      - path: /usr/bin/bash
+    - path: /usr/bin/xargs
+      fromSource:
+      - path: /usr/bin/bash
+
+    - path: /usr/bin/bash
+    - path: /usr/bin/fuser
+    - path: /opt/bitnami/mariadb/bin/mariadb-admin
+  network:
+    matchProtocols:
+
+
+    - protocol: ALL
+      fromSource:
+        - path: /opt/bitnami/mariadb/bin/mariadb
+        - path: /opt/bitnami/mariadb/bin/mariadb-admin
+        - path: /opt/bitnami/mariadb/bin/mysql
+        - path: /opt/bitnami/mariadb/bin/resolveip
+        - path: /opt/bitnami/mariadb/sbin/mariadbd
+        - path: /opt/bitnami/mariadb/sbin/mysqld
+        - path: /opt/bitnami/scripts/mariadb/run.sh
+        - path: /usr/bin/fuser
+        - path: /usr/bin/bash
+
+  action: Allow
