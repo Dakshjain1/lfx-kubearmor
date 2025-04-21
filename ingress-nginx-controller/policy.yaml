@@ -2,7 +2,7 @@ apiVersion: security.kubearmor.com/v1
 kind: KubeArmorPolicy
 metadata:
   name: ksp-ingress-nginx-controller-zero-trust
-  namespace: lfx #test-ksp
+  namespace: test-ksp
 spec:
   severity: 1
   selector:
@@ -10,45 +10,25 @@ spec:
       app.kubernetes.io/name: ingress-nginx
   process:
     matchPaths:
-# from source bash
-    - path: /usr/bin/cp
+    - path: /usr/bin/dumb-init
+    - path: /wait-shutdown
+    - path: /usr/local/nginx/sbin/nginx
       fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/date
+      - path: /nginx-ingress-controller
+    - path: /bin/busybox
       fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/dirname
+      - path: /nginx-ingress-controller
+      - path: /wait-shutdown
+    - path: /bin/bash
       fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/find
-      fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/id
-      fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/ls
-      fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/rm
-      fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/sed
-      fromSource:
-      - path: /usr/bin/bash
-    - path: /usr/bin/realpath
-      fromSource:
-      - path: /usr/bin/bash
-
-    - path: /usr/bin/bash
-    - path: /opt/bitnami/nginx/sbin/nginx
-    - path: /opt/bitnami/scripts/nginx/run.sh
+      - path: /wait-shutdown
   network:
     matchProtocols:
+    - protocol: TCP
+      fromSource:
+      - path: /usr/local/nginx/sbin/nginx
+      - path: /nginx-ingress-controller
     - protocol: ALL
       fromSource:
-        - path: /opt/bitnami/nginx/sbin/nginx
-        - path: /opt/bitnami/scripts/nginx/run.sh
-        - path: /opt/bitnami/scripts/nginx/setup.sh
-        - path: /opt/bitnami/scripts/nginx/entrypoint.sh
-        - path: /bin/bash
+      - path: /usr/bin/nginx
   action: Allow
